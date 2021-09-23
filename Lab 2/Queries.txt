@@ -1,0 +1,208 @@
+1)
+INPUT: 
+SELECT * 
+FROM actors 
+WHERE birthyear < 1960;
+
+OUTPUT: 
+ actorid |         name          | gender | birthyear
+---------+-----------------------+--------+-----------
+       0 | Kurt Russell          | Male   |      1951
+       1 | Sigourney Weaver      | Female |      1949
+       2 | Linda Hamilton        | Female |      1956
+       3 | Michael Biehn         | Male   |      1956
+       4 | Arnold Schwarzenegger | Male   |      1947
+       5 | Bill Murray           | Male   |      1950
+
+2)
+INPUT:
+SELECT * 
+FROM actors 
+LEFT JOIN movieroles ON movieroles.actorid = actors.actorid 
+WHERE 3 < actors.actorid AND actors.actorid<9 AND movieroles.role IS NOT NULL;
+
+OUTPUT:
+ actorid |         name          | gender | birthyear | actorid | movieid |       role
+---------+-----------------------+--------+-----------+---------+---------+-------------------
+       5 | Bill Murray           | Male   |      1950 |       5 |       6 | Dr. Peter Venkman
+       5 | Bill Murray           | Male   |      1950 |       5 |       7 | Bill Murray
+       7 | Emma Stone            | Female |      1988 |       7 |       9 | Jules
+       4 | Arnold Schwarzenegger | Male   |      1947 |       4 |       5 | Terminator
+
+
+3)
+
+INPUT: 
+SELECT name
+FROM actors
+WHERE EXISTS(SELECT *
+			 FROM movieroles
+			 WHERE actors.actorid = movieroles.actorid
+			 	AND movieroles.role IS NOT NULL AND
+			 	3 < actors.actorid AND actors.actorid < 9);
+
+OUTPUT:
+         name
+-----------------------
+ Arnold Schwarzenegger
+ Bill Murray
+ Emma Stone
+
+
+4)
+INPUT:
+SELECT title 
+FROM movies, reviews, imdb
+WHERE movies.movieid = reviews.movieid AND reviews.movieid = imdb.movieid AND 
+reviews.rating > 7.5 AND 
+imdb.imdb_rating > 7.5;
+
+OUTPUT:
+     title
+----------------
+ The Thing
+ 1917
+ Jurassic Park
+ The Terminator
+ Ghostbusters
+ Zombieland
+
+
+5)
+INPUT:
+SELECT DISTINCT title
+FROM movies
+WHERE EXISTS(SELECT *
+			 FROM reviews
+			 WHERE reviews.review_text LIKE '%' || movies.title ||'%');
+
+OUTPUT:
+     title
+---------------
+ 1917
+ Alien
+ Ghostbusters
+ Jurassic Park
+ The Thing
+
+
+6)
+INPUT:
+SELECT name, director
+FROM (SELECT *, count(*) OVER (partition by z.movieid) as count FROM  actors x, movies y, movieroles z WHERE x.actorid = z.actorid AND y.movieid = z.movieid) W WHERE W.count>1
+GROUP BY name, director; 
+
+OUTPUT:
+         name          |   director
+-----------------------+---------------
+ Linda Hamilton        | James Cameron
+ Arnold Schwarzenegger | James Cameron
+ Jude Law              | Guy Ritchie
+ Michael Biehn         | James Cameron
+ Rachel McAdams        | Guy Ritchie
+
+
+7)
+INPUT:
+SELECT name,title
+FROM (SELECT * 
+	FROM actors x, movies y, movieroles z 
+	WHERE x.actorid = z.actorid AND y.movieid = z.movieid) X WHERE X.name = X.role;
+
+OUTPUT:
+    name     |   title
+-------------+------------
+ Bill Murray | Zombieland
+
+8)
+INPUT:
+SELECT title
+FROM movies 
+WHERE genre LIKE '%Action%' OR genre LIKE '%Adventure%' OR genre LIKE '%crime%';
+
+OUTPUT:
+               title
+------------------------------------
+ Jurassic Park
+ The Terminator
+ Ghostbusters
+ Zombieland
+ Sherlock Holmes: A Game of Shadows
+
+9)
+INPUT:
+SELECT title
+FROM movies 
+WHERE genre LIKE '%Horror%' AND genre LIKE '%Comedy%';
+
+OUTPUT:
+   title
+------------
+ Zombieland
+
+
+10)
+INPUT:
+SELECT name
+FROM actors
+WHERE name ~ '\S [H]';
+
+OUTPUT:
+      name
+-----------------
+ Linda Hamilton
+ Woody Harrelson
+ Jonah Hill
+
+11)
+INPUT:
+SELECT name
+FROM actors
+WHERE actorid IN (SELECT actorid FROM movieroles WHERE movieroles.movieid = 5);
+
+OUTPUT:
+         name
+-----------------------
+ Linda Hamilton
+ Michael Biehn
+ Arnold Schwarzenegger
+
+12) 
+INPUT:
+SELECT title,imdb_rating
+FROM(SELECT * FROM movies x, imdb y WHERE x.movieid = y.movieid)z
+ORDER BY z.imdb_rating DESC;
+
+OUTPUT:
+               title                | imdb_rating
+------------------------------------+-------------
+ Alien                              |         8.4
+ 1917                               |         8.4
+ The Thing                          |         8.1
+ Jurassic Park                      |         8.1
+ The Terminator                     |           8
+ Ghostbusters                       |         7.8
+ Zombieland                         |         7.6
+ Superbad                           |         7.6
+ Sherlock Holmes: A Game of Shadows |         7.5
+ The Thing                          |         6.2
+
+13)
+INPUT:
+SELECT role
+FROM(SELECT * 
+	FROM movieroles x, actors y, movies z 
+	WHERE x.actorid = y.actorid AND x.movieid = z.movieid AND z.year < 2000) W
+WHERE W.gender = 'Male' OR W.title IN (SELECT title 
+	FROM movieroles x, actors y, movies z 
+	WHERE x.actorid = y.actorid AND x.movieid = z.movieid AND y.gender = 'Male')
+ORDER BY W.role ASC;
+
+OUTPUT:
+       role
+-------------------
+ Dr. Peter Venkman
+ Kyle Reese
+ MacReady
+ Sarah Connor
+ Terminator

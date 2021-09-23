@@ -1,0 +1,147 @@
+
+#C1  
+ALTER TABLE Actors ADD CONSTRAINT proper_name
+CHECK (name ~ '^[A-Z].*n$');
+
+regexp_split_to_table(name, '\s+')
+
+#C2
+ALTER TABLE Actors ADD CONSTRAINT proper_age
+CHECK (2020 - birthyear BETWEEN 10 and 100)
+
+#C3
+ALTER TABLE Actors ADD CONSTRAINT proper_gender
+CHECK(gender in ('Male','Female','Non-binary'));
+
+#C4
+ALTER TABLE Reviews ADD CONSTRAINT review_check
+CHECK(char_length(review_text) < 2000 
+AND (LENGTH(review_text) - LENGTH(replace(review_text, '.', ''))) < 20 
+AND array_length(regexp_split_to_array(trim(review_text), E'\\W+'), 1) < 1000
+AND review_text ~ '[A-Z]\w+');
+
+#C5
+ALTER TABLE Reviews ADD CONSTRAINT proper_rating
+CHECK (rating BETWEEN 0 AND 10);
+
+ALTER TABLE Imdb ADD CONSTRAINT proper_imdb_rating
+CHECK (imdb_rating BETWEEN 0 AND 10);
+
+#C6
+ALTER TABLE MovieRoles
+DROP CONSTRAINT movieroles_movieid_fkey,
+ADD CONSTRAINT movieroles_movieid_fkey
+FOREIGN KEY(movieid)
+REFERENCES Movies (movieid)
+ON DELETE CASCADE;
+
+ALTER TABLE MovieRoles
+DROP CONSTRAINT movieroles_actorid_fkey,
+ADD CONSTRAINT movieroles_actorid_fkey
+FOREIGN KEY(actorid)
+REFERENCES Actors (actorid)
+ON DELETE CASCADE;
+
+ALTER TABLE Reviews
+DROP CONSTRAINT reviews_movieid_fkey,
+ADD CONSTRAINT reviews_movieid_fkey
+FOREIGN KEY (movieid)
+    REFERENCES Movies (movieid)
+    ON DELETE CASCADE;
+
+ALTER TABLE Imdb
+DROP CONSTRAINT imdb_movieid_fkey,
+ADD CONSTRAINT imdb_movieid_fkey
+FOREIGN KEY (movieid)
+    REFERENCES Movies (movieid)
+    ON DELETE CASCADE;
+
+DELETE FROM Movies WHERE movieid = 7;
+DELETE FROM Actors WHERE actorid = 5;
+
+#C7
+#test c1
+INSERT INTO actors VALUES (20,'invalidName','Male',1950);
+#test c2
+INSERT INTO actors VALUES (20,'Valid Name','Male',1800);
+#test c3
+INSERT INTO actors VALUES (20,'Valid Name','Apple',1950);
+#test c4
+INSERT INTO reviews VALUES (0, 3, 7, '<isnert bad text>');
+#test c5
+INSERT INTO Imdb VALUES (20, 11, 'TESTID');
+INSERT INTO reviews VALUES (100,100, 12, 'review_text');
+
+#C8
+SELECT * 
+FROM movies m1, movies m2 
+WHERE m1.title = m2.title AND m1.genre = m2.genre AND m1.director <> m2.director;
+
+In the case of our given dataset, this actually returns 2 entries of 'The Thing', therefore it does not hold. 
+
+#C9
+SELECT * 
+FROM actors a1, actors a2  
+WHERE a1.name = a2.name AND a1.gender = a2.gender AND a1.birthyear <> a2.birthyear;
+
+This should return an emptry set therefore functional dependency holds. 
+#C10
+To violate c8, we could update the director of either of 'The Thing' movies to one or the other directors in order to make them the same. 
+
+INSERT INTO actors VALUES (15,'Kurt Russell','Male',1960)
+To violate C9, if we were to insert an actor with the same name and gender but different birtheyar, then it would break the functional dependency of C9. 
+
+#Q1
+INSERT INTO actors VALUES
+(14, 'Daniel Radcliffe','Male', 1989);
+INSERT INTO movies VALUES 
+(10, 'Now You See Me 2', 'Action, Adventure, Comedy', 2016, 'Jon Chu');
+INSERT INTO movieroles VALUES 
+(14,10, 'Walter Mabry');
+INSERT INTO reviews VALUES 
+(10,10, 4, 'review_text');
+INSERT INTO imdb VALUES 
+(10, 6.5,'tt3110958');
+
+#Q2
+SELECT m.movieid, m.title, r.rating, i.imdb_rating, CASE WHEN movieid > 9 THEN 'True' ELSE 'False'
+END AS new_movie
+FROM movies m
+JOIN imdb i using (movieid)
+join reviews r using (movieid)
+
+#Q3
+SELECT name, CASE WHEN name = 'Daniel Radcliffe' THEN 'true' ELSE 'False' END as new_actor
+FROM Actors;
+
+#Q4
+SELECT roles, CASE WHEN actorid > 13  OR movieid > 9 THEN 'true' ELSE 'False' END as new_role
+FROM movieroles;
+
+#Q5
+EXPECTED OUTPUT :
+     title     | avg_rating | row_num |  case
+---------------+------------+---------+---------
+ The Thing     |       9.05 |       1 | GOOD
+ The Thing     |        6.6 |       2 | BAD
+ 1917          |        9.2 |       3 | GOOD
+ Jurassic Park |       8.55 |       4 | AVERAGE
+ Alien         |        7.2 |       5 | AVERAGE
+
+INPUT:
+
+SELECT * FROM
+(
+	SELECT title, (imdb_rating + rating)/2 as avg_rating, ROW_NUMBER() OVER (ORDER BY m.movieid) AS ROW_NUM,
+	CASE 
+	WHEN (imdb_rating + rating)/2 > 9 THEN 'GOOD' 
+	WHEN (imdb_rating + rating)/2 < 7 THEN 'BAD'
+	ELSE 'AVERAGE'
+	END
+	FROM reviews r
+	JOIN movies m using (movieid)
+	JOIN imdb i using (movieid)
+) X 
+WHERE ROW_NUM BETWEEN 1 AND 5;
+
+

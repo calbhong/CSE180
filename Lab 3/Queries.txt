@@ -1,0 +1,224 @@
+1)
+INPUT:
+SELECT name, 2020 - birthyear as age
+FROM actors;
+
+OUTPUT:
+          name           | age
+-------------------------+-----
+ Kurt Russell            |  69
+ Sigourney Weaver        |  71
+ Linda Hamilton          |  64
+ Michael Biehn           |  64
+ Arnold Schwarzenegger   |  73
+ Bill Murray             |  70
+ Jesse Eisenberg         |  37
+ Emma Stone              |  32
+ Woody Harrelson         |  59
+ Natalie Portman         |  39
+ Rachel McAdams          |  42
+ Jonah Hill              |  37
+ Jude Law                |  48
+ Mary Elizabeth Winstead |  36
+
+2)
+INPUT:
+SELECT split_part(name,' ',1), split_part(name,' ',2) as reverse
+FROM actors;
+
+OUTPUT:
+ split_part |    reverse
+------------+----------------
+ Kurt       | Russell
+ Sigourney  | Weaver
+ Linda      | Hamilton
+ Michael    | Biehn
+ Arnold     | Schwarzenegger
+ Bill       | Murray
+ Jesse      | Eisenberg
+ Emma       | Stone
+ Woody      | Harrelson
+ Natalie    | Portman
+ Rachel     | McAdams
+ Jonah      | Hill
+ Jude       | Law
+ Mary       | Elizabeth
+
+3)
+INPUT:
+SELECT min(imdb_rating), max(imdb_rating), avg(imdb_rating)
+FROM imdb;
+
+OUTPUT:
+ min | max | avg
+-----+-----+------
+ 6.2 | 8.4 | 7.77
+
+4)
+INPUT:
+SELECT X.gender, sum(X.age), avg(X.age), min(X.age), max(X.age)
+FROM (select gender, 2020-birthyear as age from actors) as X
+group by gender
+
+OUTPUT:
+ gender | sum |         avg         | min | max
+--------+-----+---------------------+-----+-----
+ Female | 284 | 47.3333333333333333 |  32 |  71
+ Male   | 457 | 57.1250000000000000 |  37 |  73
+
+5)
+INPUT:
+SELECT  title, STRING_AGG(DISTINCT name,';')  as actors 
+FROM (SELECT *, count(*) OVER (partition by m.movieid) as count FROM actors a
+JOIN movieroles mr on a.actorid = mr.actorid
+JOIN movies m on mr.movieid = m.movieid)X 
+WHERE X.count>1
+GROUP BY title;
+
+OUTPUT:
+               title                |                       actors
+------------------------------------+----------------------------------------------------
+ Sherlock Holmes: A Game of Shadows | Jude Law;Rachel McAdams
+ The Terminator                     | Arnold Schwarzenegger;Linda Hamilton;Michael Biehn
+
+6)
+INPUT:
+SELECT movieid,title,genre,year,director FROM movies 
+JOIN imdb USING (movieid)
+JOIN reviews using (movieid)
+ORDER BY (rating + imdb_rating)/2 DESC
+limit 3 ;
+
+OUTPUT:
+ movieid |    title     |          genre           | year |    director
+---------+--------------+--------------------------+------+----------------
+       2 | 1917         | Drama, War               | 2019 | Sam Mendes
+       0 | The Thing    | Horror, Mystery, Sci-Fi  | 1982 | John Carpenter
+       6 | Ghostbusters | Action, Comedy, Fantasy  | 1984 | Ivan Reitman
+
+7)
+INPUT:
+SELECT movieid, 
+char_length(review_text) AS num_chars,
+(LENGTH(review_text) - LENGTH(replace(review_text, '.', ''))) AS num_sents
+FROM reviews 
+ORDER BY num_chars DESC;
+
+OUTPUT:
+ movieid | num_chars | num_sents
+---------+-----------+-----------
+       4 |      1921 |        15
+       3 |      1624 |        14
+       8 |       903 |        16
+       7 |       795 |         5
+       0 |       650 |         7
+       2 |       526 |        15
+       5 |       491 |         9
+       6 |       442 |         4
+       1 |       266 |         2
+       9 |        81 |         1
+
+8)
+INPUT:
+SELECT x.genres, COUNT(*)FROM(
+SELECT REGEXP_SPLIT_TO_TABLE (genre, ', ') as genres FROM movies) x
+GROUP BY x.genres
+
+OUTPUT:
+  genres   | count
+-----------+-------
+ Adventure |     3
+ Comedy    |     3
+ Crime     |     1
+ Fantasy   |     1
+ Drama     |     1
+ Horror    |     4
+ Sci-Fi    |     5
+ War       |     1
+ Mystery   |     2
+ Action    |     4
+
+9)
+INPUT:
+(SELECT name, age, title FROM 
+	(	SELECT *, COUNT(*)OVER (partition by a.name),year - birthyear as age
+		FROM actors a
+		JOIN movieroles mr using (actorid)
+		JOIN movies m using (movieid)ORDER BY age
+	)X
+	WHERE X.COUNT = 1)
+UNION
+(SELECT name, age, title FROM 
+	(	SELECT *, COUNT(*)OVER (partition by a.name ORDER BY year DESC),year - birthyear as age
+		FROM actors a
+		JOIN movieroles mr using (actorid)
+		JOIN movies m using (movieid)ORDER BY age
+	)Y 
+	WHERE Y.COUNT > 1)
+
+
+OUTPUT:
+          name           | age |               title
+-------------------------+-----+------------------------------------
+ Emma Stone              |  19 | Superbad
+ Jude Law                |  39 | Sherlock Holmes: A Game of Shadows
+ Linda Hamilton          |  28 | The Terminator
+ Michael Biehn           |  28 | The Terminator
+ Mary Elizabeth Winstead |  27 | The Thing
+ Arnold Schwarzenegger   |  37 | The Terminator
+ Kurt Russell            |  31 | The Thing
+ Rachel McAdams          |  33 | Sherlock Holmes: A Game of Shadows
+ Bill Murray             |  34 | Ghostbusters
+ Sigourney Weaver        |  30 | Alien
+
+#query for all unique actors 
+#UNION
+#actors with multiple roles : fetch earliest movie year 
+
+
+10)
+INPUT:
+SELECT x.genres, avg(x.ratings)
+FROM(
+SELECT REGEXP_SPLIT_TO_TABLE (genre, ', ') as genres, r.rating as ratings
+FROM movies m
+JOIN reviews r using (movieid)) x
+GROUP BY x.genres
+
+OUTPUT:
+  genres   |         avg
+-----------+---------------------
+ Adventure |  7.6666666666666667
+ Comedy    |  8.3333333333333333
+ Crime     |  6.0000000000000000
+ Fantasy   | 10.0000000000000000
+ Drama     | 10.0000000000000000
+ Horror    |  7.7500000000000000
+ Sci-Fi    |  8.0000000000000000
+ War       | 10.0000000000000000
+ Mystery   |  8.5000000000000000
+ Action    |  8.2500000000000000
+
+11)
+INPUT:
+SELECT title, ABS(rating - imdb_rating) as abs, 
+CASE WHEN rating > imdb_rating THEN 'customer' else 'imdb'
+END  
+FROM movies m 
+JOIN reviews r using (movieid)
+JOIN imdb i using (movieid)
+ORDER BY abs DESC
+
+OUTPUT:
+               title                | abs |   case
+------------------------------------+-----+----------
+ Alien                              | 2.4 | imdb
+ Ghostbusters                       | 2.2 | customer
+ The Thing                          | 1.9 | customer
+ 1917                               | 1.6 | customer
+ Sherlock Holmes: A Game of Shadows | 1.5 | imdb
+ Jurassic Park                      | 0.9 | customer
+ The Thing                          | 0.8 | customer
+ Superbad                           | 0.6 | imdb
+ Zombieland                         | 0.4 | customer
+ The Terminator                     |   0 | imdb

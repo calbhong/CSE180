@@ -1,0 +1,135 @@
+Q1:
+
+       "name"            "age" 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Kurt Russell              69
+ Sigourney Weaver          71
+ Linda Hamilton            64
+ Michael Biehn             64
+ Arnold Schwarzenegger     73
+ Bill Murray               70
+ Jesse Eisenberg           37
+ Emma Stone                32
+ Woody Harrelson           59
+ Natalie Portman           39
+ Rachel McAdams            42
+ Jonah Hill                37
+ Jude Law                  48
+ Mary Elizabeth Winstead   36
+
+
+Q2:
+ "split_part"    "reverse"     
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Kurt        Russell
+ Sigourney   Weaver
+ Linda       Hamilton
+ Michael     Biehn
+ Arnold      Schwarzenegger
+ Bill        Murray
+ Jesse       Eisenberg
+ Emma        Stone
+ Woody       Harrelson
+ Natalie     Portman
+ Rachel      McAdams
+ Jonah       Hill
+ Jude        Law
+ Mary        Winstead
+
+Q3:
+ "min"   "max"        "avg"      
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  6.2     8.4     7.76999998092651
+
+Q4:
+ "sum"          "avg"       "min"  "max" 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 284   47.3333333333333333    32    71
+ 457   57.1250000000000000    37    73
+
+Q5:
+               "title"                                        "actor"                        
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Sherlock Holmes: A Game of Shadows   Jude Law;Rachel McAdams
+ The Terminator                       Linda Hamilton;Michael Biehn;Arnold Schwarzenegger
+
+Q6:
+ movieid      title               genre             year      director    
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       2 | 1917         | Drama, War               | 2019   Sam Mendes
+       0 | The Thing    | Horror, Mystery, Sci-Fi  | 1982   John Carpenter
+       6 | Ghostbusters | Action, Comedy, Fantasy  | 1984   Ivan Reitman
+
+Q7:
+ "movieid" | "num_chars" | "num_sents" 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+       4 |      1921 |        15
+       3 |      1624 |        14
+       8 |       903 |        16
+       7 |       795 |         5
+       0 |       650 |         7
+       2 |       526 |        15
+       5 |       491 |         9
+       6 |       442 |         4
+       1 |       266 |         2
+       9 |        81 |         1
+
+Q8:
+ "genre"   | "count" 
+ Adventure |     3
+ Comedy    |     3
+ Crime     |     1
+ Fantasy   |     1
+ Drama     |     1
+ Horror    |     4
+ Sci-Fi    |     5
+ War       |     1
+ Mystery   |     2
+ Action    |     4
+
+
+Q9:
+          name             age                 title                
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ Kurt Russell            |  31 | The Thing
+ Mary Elizabeth Winstead |  27 | The Thing
+ Bill Murray             |  34 | Ghostbusters
+ Jude Law                |  39 | Sherlock Holmes: A Game of Shadows
+ Rachel McAdams          |  33 | Sherlock Holmes: A Game of Shadows
+ Emma Stone              |  19 | Superbad
+ Sigourney Weaver        |  30 | Alien
+ Linda Hamilton          |  28 | The Terminator
+ Michael Biehn           |  28 | The Terminator
+ Arnold Schwarzenegger   |  37 | The Terminator
+
+
+Q10:
+   genre   |    avg_rating    
+-----------+------------------
+ Adventure | 7.66666666666667
+ Comedy    | 8.33333333333333
+ Crime     |                6
+ Fantasy   |               10
+ Drama     |               10
+ Horror    |             7.75
+ Sci-Fi    |                8
+ War       |               10
+ Mystery   |              8.5
+ Action    |             8.25
+
+
+Q11:
+               title                | abs | H-value 
+------------------------------------+-----+--------------
+ Alien                              | 2.4 | imdb
+ Ghostbusters                       | 2.2 | rating
+ The Thing                          | 1.9 | rating
+ 1917                               | 1.6 | rating
+ Sherlock Holmes: A Game of Shadows | 1.5 | imdb
+ Jurassic Park						| 0.9 | rating
+ The Thing							| 0.8 | rating
+ Superbad							| 0.6 | imdb
+ Zombieland							| 0.4 | rating
+ The Terminator						|  0  | rating
+

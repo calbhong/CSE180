@@ -1,0 +1,97 @@
+Q1:
+"actorid","name","gender","birthyear"
+0,"Kurt Russell","Male",1951
+1,"Sigourney Weaver","Female",1949
+2,"Linda Hamilton","Female",1956
+3,"Michael Biehn","Male",1956
+4,"Arnold Schwarzenegger","Male",1947
+5,"Bill Murray","Male",1950
+
+
+Q2:
+"actorid","name","gender","birthyear","actorid-2","movieid","role"
+5,"Bill Murray","Male",1950,5,6,"Dr. Peter Venkman"
+5,"Bill Murray","Male",1950,5,7,"Bill Murray"
+7,"Emma Stone","Female",1988,7,9,"Jules"
+4,"Arnold Schwarzenegger","Male",1947,4,5,"Terminator"
+
+Q3:
+"name"
+"Arnold Schwarzenegger"
+"Bill Murray"
+"Emma Stone"
+
+Q4:
+"title"
+"The Thing"
+"1917"
+"Jurassic Park"
+"The Terminator"
+"Ghostbusters"
+"Zombieland"
+
+Q5:
+"title"
+"The Thing"
+"1917"
+"Jurassic Park"
+"Alien"
+"Ghostbusters"
+
+Q6:
+"name","director"
+"Jude Law","Guy Ritchie"
+"Rachel McAdams","Guy Ritchie"
+"Linda Hamilton","James Cameron"
+"Michael Biehn","James Cameron"
+"Arnold Schwarzenegger","James Cameron"
+
+Q7:
+"name","title"
+"Bill Murray","Zombieland"
+
+Q8:
+"title"
+"Jurassic Park"
+"The Terminator"
+"Ghostbusters"
+"Zombieland"
+"Sherlock Holmes: A Game of Shadows"
+
+Q9:
+"title"
+"Zombieland"
+
+Q10:
+"name"
+"Linda Hamilton"
+"Woody Harrelson"
+"Jonah Hill"
+
+Q11:
+"name"
+"Linda Hamilton"
+"Michael Biehn"
+"Arnold Schwarzenegger"
+
+Q12:
+"title","imdb_rating"
+"Alien","8.4"
+"1917","8.4"
+"The Thing","8.1"
+"Jurassic Park","8.1"
+"The Terminator","8"
+"Ghostbusters","7.8"
+"Zombieland","7.6"
+"Superbad","7.6"
+"Sherlock Holmes: A Game of Shadows","7.5"
+"The Thing","6.2"
+
+Q13:
+"role"
+"Dr. Peter Venkman"
+"Kyle Reese"
+"MacReady"
+"Sarah Connor"
+"Terminator"
+
